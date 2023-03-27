@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { useState, setState } from 'react';
+
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -12,8 +14,53 @@ import Footer from '../Components/Footer';
 import Navbar from '../Components/Navbar';
 import { Link } from 'react-router-dom';
 
+import { db } from '../Components/firebase';
+
+import { SettingsSystemDaydreamOutlined } from '@mui/icons-material';
 
 const AcademicForm = () => {
+    const [ firstName , setFirstName ] = useState("");
+    const [ lastName , setLastName ] = useState("");
+    const [ deptName , setDeptName ] = useState("");
+    const [ email , setEmail ] = useState("");
+    const [ phoneNumber , setPhoneNumber ] = useState("");
+    const [ position , setPosition ] = useState("");
+    const [ sex , setSex ] = useState("");
+    const [ cv , setCv ] = useState("");
+
+
+    const handleInputChange = (e) => {
+        const { id , value } = e.target;
+        if(id === "firstName") {
+            setFirstName(value);
+        }
+        if(id === "lastName") {
+            setLastName(value);
+        }
+        if(id === "deptName") {
+            setDeptName(value);
+        }
+        if(id === "email") {
+            setEmail(value);
+        }
+        if(id === "phoneNumber") {
+            setPhoneNumber(value);
+        }
+        if(id === "position") {
+            setPosition(value);
+        }
+        if(id === "sex") {
+            setSex(value);
+        }
+        if(id === "cv") {
+            setCv(value);
+        }
+    }
+
+    const handleSubmit = () => {
+        console.log(firstName,lastName,deptName,email,phoneNumber,position,sex);
+    }
+    
     const scrollToTop = () => {
         window.scrollTo(0, 0)
     }
@@ -27,18 +74,20 @@ const AcademicForm = () => {
             headText={'Get Started'}
         />
 
+        
+
         <div className="academicFormContainer">
             <div className="academicForm">
                 <form action="">
                     <div className="flex">
                         <div className="form-group">
                             <label htmlFor="first-name" className='inputLabel'>First name *</label>
-                            <TextField id="input" name='first-name' variant="outlined" color='success' />
+                            <TextField placeholder="First name" name="first-name" variant='outlined' color='success' value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                         </div>
 
                         <div className="form-group">
                             <label htmlFor="last-name" className='inputLabel'>Last name *</label>
-                            <TextField id="input" name='last-name' variant="outlined" color='success' />
+                            <TextField id="inputLastName" placeholder='Last name' name='last-name' variant="outlined" color='success' />
                         </div>
                     </div>
                     
@@ -68,12 +117,12 @@ const AcademicForm = () => {
                     <div className="flex">
                         <div className="form-group">
                             <label htmlFor="email" className='inputLabel'>Email *</label>
-                            <TextField id="input" name='email' variant="outlined" color='success' type={'email'} />
+                            <TextField id="inputEmail" placeholder='Email' name='email' variant="outlined" color='success' type={'email'} />
                         </div>
 
                         <div className="form-group">
                             <label htmlFor="phone" className='inputLabel'>Phone number *</label>
-                            <TextField id="input" name='phone' variant="outlined" color='success' type={'number'}/>
+                            <TextField id="inputPhoneNumber" placeholder='Phone number' name='phone' variant="outlined" color='success' type={'number'}/>
                         </div>
                     </div>
 
@@ -121,12 +170,16 @@ const AcademicForm = () => {
                     <div className="form-group" style={{
                         marginBottom: '0px'
                     }}>
-                        <Button variant="contained" color='success' className='formButton'> Submit </Button>
+                        <Button onClick={ () => handleSubmit } variant="contained" color='success' className='formButton'> Submit </Button>
                     </div>
 
                 </form>
             </div>
         </div>
+
+
+       
+      
 
         <Footer />
 
