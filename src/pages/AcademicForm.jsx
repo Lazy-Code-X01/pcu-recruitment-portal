@@ -14,7 +14,7 @@ import Footer from '../Components/Footer';
 import Navbar from '../Components/Navbar';
 import { Link } from 'react-router-dom';
 
-import { db } from '../Components/firebase';
+import {db} from '../Components/firebase';
 
 import { SettingsSystemDaydreamOutlined } from '@mui/icons-material';
 
@@ -57,9 +57,7 @@ const AcademicForm = () => {
         }
     }
 
-    const handleSubmit = () => {
-        console.log(firstName,lastName,deptName,email,phoneNumber,position,sex);
-    }
+   
     
     const scrollToTop = () => {
         window.scrollTo(0, 0)
