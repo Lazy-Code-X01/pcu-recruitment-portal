@@ -1,5 +1,6 @@
 import React from 'react'
-
+import { database } from '../firebase';
+import {ref,push,child,update} from "firebase/database";
 import { useState, setState } from 'react';
 
 import TextField from '@mui/material/TextField';
@@ -14,7 +15,7 @@ import Footer from '../Components/Footer';
 import Navbar from '../Components/Navbar';
 import { Link } from 'react-router-dom';
 
-import {db} from '../Components/firebase';
+
 
 import { SettingsSystemDaydreamOutlined } from '@mui/icons-material';
 
@@ -29,32 +30,54 @@ const AcademicForm = () => {
     const [ cv , setCv ] = useState("");
 
 
+
     const handleInputChange = (e) => {
-        const { id , value } = e.target;
-        if(id === "firstName") {
+        const {id , value} = e.target;
+        if(id === "firstName"){
             setFirstName(value);
         }
-        if(id === "lastName") {
+        if(id === "lastName"){
             setLastName(value);
         }
-        if(id === "deptName") {
+        if(id === "deptName"){
             setDeptName(value);
         }
-        if(id === "email") {
+        if(id === "email"){
             setEmail(value);
         }
-        if(id === "phoneNumber") {
+        if(id === "phoneNumber"){
             setPhoneNumber(value);
         }
-        if(id === "position") {
+        if(id === "position"){
             setPosition(value);
         }
-        if(id === "sex") {
+        if(id === "sex"){
             setSex(value);
         }
-        if(id === "cv") {
+        if(id === "cv"){
             setCv(value);
         }
+    }
+
+    const handleSubmission = () => {
+        console.log(firstName,lastName,position,email,sex,cv);
+    }
+
+    const handleSubmit = () => {
+        let obj = {
+            firstName:firstName,
+            lastName:lastName,
+            deptName:deptName,
+            email:email,
+            phoneNumber:phoneNumber,
+            position:position,
+            sex:sex,
+            cv:cv,
+        }
+        const newPostKey = push(child(ref(database), 'posts')).key;
+        const updates = {};
+        updates['/' + newPostKey] = obj
+        return update(ref(database), updates);
     }
 
    
@@ -76,16 +99,16 @@ const AcademicForm = () => {
 
         <div className="academicFormContainer">
             <div className="academicForm">
-                <form action="">
+                <form action="" method="POST">
                     <div className="flex">
                         <div className="form-group">
                             <label htmlFor="first-name" className='inputLabel'>First name *</label>
-                            <TextField placeholder="First name" name="first-name" variant='outlined' color='success' value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                            <TextField id="firstName" placeholder="First name" name="first-name" variant='outlined' color='success' value={firstName} onChange={(e) => handleInputChange(e)} />
                         </div>
 
                         <div className="form-group">
                             <label htmlFor="last-name" className='inputLabel'>Last name *</label>
-                            <TextField id="inputLastName" placeholder='Last name' name='last-name' variant="outlined" color='success' />
+                            <TextField id="lastName" placeholder="Last name" name="last-name" variant='outlined' color='success' value={lastName} onChange={(e) => handleInputChange(e)} />
                         </div>
                     </div>
                     
@@ -95,8 +118,8 @@ const AcademicForm = () => {
                         <label htmlFor="faculty" className='inputLabel'>Department *</label>
                         <Select
                             // labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            name='Department'
+                            id="deptName"
+                            name='Department' 
                             variant="outlined"
                             color='success'
                             defaultValue={'computer science'}
@@ -115,12 +138,12 @@ const AcademicForm = () => {
                     <div className="flex">
                         <div className="form-group">
                             <label htmlFor="email" className='inputLabel'>Email *</label>
-                            <TextField id="inputEmail" placeholder='Email' name='email' variant="outlined" color='success' type={'email'} />
+                            <TextField id="email" value={email} onChange={(e) => handleInputChange(e)} placeholder='Email' name='email' variant="outlined" color='success' type={'email'} />
                         </div>
 
                         <div className="form-group">
                             <label htmlFor="phone" className='inputLabel'>Phone number *</label>
-                            <TextField id="inputPhoneNumber" placeholder='Phone number' name='phone' variant="outlined" color='success' type={'number'}/>
+                            <TextField id="phoneNumber" value={phoneNumber} placeholder='Phone number' name='phone' variant="outlined" color='success' type={'number'} />
                         </div>
                     </div>
 
@@ -129,7 +152,7 @@ const AcademicForm = () => {
                     <div className="form-group">
                         <label htmlFor="position" className='inputLabel'>Position applied for *</label>
                         <Select
-                            id="demo-simple-select"
+                            id="position"
                             name='position'
                             variant="outlined"
                             color='success'
@@ -146,7 +169,7 @@ const AcademicForm = () => {
                     <div className="flex">
                         <div className="form-group">
                             <label htmlFor="sex" className='inputLabel'>Sex *</label>
-                            <Select
+                            <Select id='sex'
                             name='sex'
                             variant="outlined"
                             color='success'
@@ -161,14 +184,14 @@ const AcademicForm = () => {
 
                         <div className="form-group">
                             <label htmlFor="cv" className='inputLabel'>Upload cv *</label>
-                            <TextField id="input" name='cv' variant="outlined" color='success' type={'file'}/>
+                            <TextField id="cv" name='cv' variant="outlined" color='success' type='file'/>
                         </div>
                     </div>
 
                     <div className="form-group" style={{
                         marginBottom: '0px'
                     }}>
-                        <Button onClick={ () => handleSubmit } variant="contained" color='success' className='formButton'> Submit </Button>
+                        <Button onClick={()=>handleSubmission()} variant="contained" color='success' className='formButton'> Submit </Button>
                     </div>
 
                 </form>
