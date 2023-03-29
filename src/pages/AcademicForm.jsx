@@ -194,13 +194,13 @@ const AcademicForm = () => {
                     <div className="flex">
                         <div className="form-group">
                             <label htmlFor="first-name" className='inputLabel'>First name *</label>
-                            <TextField id=""  placeholder='First Name' name='firstName' value={userData.firstName} onChange={postUserData} variant="outlined" color='success' type={'text'} required />
+                            <TextField id=""  placeholder='First Name' required name='firstName' value={userData.firstName} onChange={postUserData} variant="outlined" color='success' type={'text'} required />
                             <small className="text-danger">First name is required </small>
                         </div>
 
                         <div className="form-group">
                             <label htmlFor="last-name" className='inputLabel'>Last name *</label>
-                            <TextField id=""  placeholder='Last Name' name='lastName' value={userData.lastName} onChange={postUserData} variant="outlined" color='success' type={'text'} required />
+                            <TextField id=""  placeholder='Last Name' required name='lastName' value={userData.lastName} onChange={postUserData} variant="outlined" color='success' type={'text'} required />
                             <small className="text-danger">Last name is required </small>
                         </div>
                     </div>
@@ -211,7 +211,7 @@ const AcademicForm = () => {
                         <label htmlFor="faculty" className='inputLabel'>Department *</label>
                         <Select
                             // labelId="demo-simple-select-label"
-                            
+                            required
                             name='dept' value={userData.dept} onChange={postUserData}
                             variant="outlined"
                             color='success'
@@ -232,13 +232,13 @@ const AcademicForm = () => {
                     <div className="flex">
                         <div className="form-group">
                             <label htmlFor="email" className='inputLabel'>Email *</label>
-                            <TextField id="" name='email'  placeholder='Email' value={userData.email} onChange={postUserData} variant="outlined" color='success' type={'email'} />
+                            <TextField id="" required name='email'  placeholder='Email' value={userData.email} onChange={postUserData} variant="outlined" color='success' type={'email'} />
                             <small className="text-danger">Email is required </small>
                         </div>
 
                         <div className="form-group">
                             <label htmlFor="phone" className='inputLabel'>Phone number *</label>
-                            <TextField placeholder='Phone number' name='phone' value={userData.phone} onChange={postUserData} variant="outlined" color='success' type={'number'} />
+                            <TextField placeholder='Phone number' required name='phone' value={userData.phone} onChange={postUserData} variant="outlined" color='success' type={'number'} />
                             <small className="text-danger">Phone Number is required </small>
                         </div>
                     </div>
@@ -248,7 +248,7 @@ const AcademicForm = () => {
                     <div className="form-group">
                         <label htmlFor="position" className='inputLabel'>Position applied for *</label>
                         <Select
-                            id=""
+                            id=""  required
                             name='position' value={userData.position} onChange={postUserData} 
                             variant="outlined"
                             color='success'
@@ -266,7 +266,7 @@ const AcademicForm = () => {
                     <div className="flex">
                         <div className="form-group">
                             <label htmlFor="sex" className='inputLabel'>Sex *</label>
-                            <Select id='sex'
+                            <Select id='sex'  required
                             name='sex' value={userData.sex} onChange={postUserData} 
                             variant="outlined"
                             color='success'
