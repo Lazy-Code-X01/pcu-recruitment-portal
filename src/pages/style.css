@@ -42,3 +42,6 @@
   font-weight: 600;
   cursor: pointer;
 }
+.text-danger {
+  color: red;
+}

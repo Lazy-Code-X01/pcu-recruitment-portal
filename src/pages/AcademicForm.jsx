@@ -1,7 +1,5 @@
-import React from 'react'
-import { database } from '../firebase';
-import {ref,push,child,update} from "firebase/database";
-import { useState, setState } from 'react';
+import React, { useState } from 'react';
+
 
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
@@ -17,70 +15,163 @@ import { Link } from 'react-router-dom';
 
 
 
-import { SettingsSystemDaydreamOutlined } from '@mui/icons-material';
+import { ConstructionRounded, SettingsSystemDaydreamOutlined } from '@mui/icons-material';
+import { set } from 'firebase/database';
+import { async } from '@firebase/util';
 
 const AcademicForm = () => {
-    const [ firstName , setFirstName ] = useState("");
-    const [ lastName , setLastName ] = useState("");
-    const [ deptName , setDeptName ] = useState("");
-    const [ email , setEmail ] = useState("");
-    const [ phoneNumber , setPhoneNumber ] = useState("");
-    const [ position , setPosition ] = useState("");
-    const [ sex , setSex ] = useState("");
-    const [ cv , setCv ] = useState("");
+    
+
+    const [ userData, setUserData ] = useState({
+        firstName:"",
+        lastName:"",
+        dept:"computer science",
+        email:"",
+        phone:"",
+        position:"professor",
+        sex:"rather not say",
+        cv:"",
+    });
+
+    const regExp = RegExp(
+        /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/
+    )
+
+    const formValid = ({ isError, ...rest }) => {
+        let isValid = false;
+        Object.values(isError).forEach(val => {
+            if(val.length > 0) {
+                isValid = false
+            } else {
+                isValid = true
+            }
+        });
+        Object.values(rest).forEach(val => {
+            if (val === null) {
+                isValid = false
+            } else {
+                isValid = true
+            }
+        });
+        return isValid;
+    };
+
+    let name, value;
+    const postUserData = (event) =>{
+        name = event.target.name;
+        value = event.target.value;
 
 
+        setUserData({ ...userData, [name]: value });
 
-    const handleInputChange = (e) => {
-        const {id , value} = e.target;
-        if(id === "firstName"){
-            setFirstName(value);
-        }
-        if(id === "lastName"){
-            setLastName(value);
-        }
-        if(id === "deptName"){
-            setDeptName(value);
-        }
-        if(id === "email"){
-            setEmail(value);
-        }
-        if(id === "phoneNumber"){
-            setPhoneNumber(value);
-        }
-        if(id === "position"){
-            setPosition(value);
-        }
-        if(id === "sex"){
-            setSex(value);
-        }
-        if(id === "cv"){
-            setCv(value);
-        }
-    }
+    };
 
-    const handleSubmission = () => {
-        console.log(firstName,lastName,position,email,sex,cv);
-    }
 
-    const handleSubmit = () => {
-        let obj = {
-            firstName:firstName,
-            lastName:lastName,
-            deptName:deptName,
-            email:email,
-            phoneNumber:phoneNumber,
-            position:position,
-            sex:sex,
-            cv:cv,
+    handleFormValidation() {    
+        const { firstName, lastName, dept, email, phone, position, sex, cv } = this.state;    
+        let formErrors = {};    
+        let formIsValid = true;    
+    
+        //First name     
+        if (!firstName) {    
+            formIsValid = false;    
+            formErrors["firstNameErr"] = "First name is required.";    
+        }    
+
+        //Last name
+        if (!lastName) {    
+            formIsValid = false;    
+            formErrors["lastNameErr"] = "Last name is required.";    
         }
-        const newPostKey = push(child(ref(database), 'posts')).key;
-        const updates = {};
-        updates['/' + newPostKey] = obj
-        return update(ref(database), updates);
-    }
+    
+        //Email    
+        if (!emailId) {    
+            formIsValid = false;    
+            formErrors["emailIdErr"] = "Email id is required.";    
+        }    
+        else if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(emailId))) {    
+    
+            formIsValid = false;    
+            formErrors["emailIdErr"] = "Invalid email id.";    
+        }    
+    
+        //DOB    
+        if (!dob) {    
+            formIsValid = false;    
+            formErrors["dobErr"] = "Date of birth is required.";    
+        }    
+        else {    
+            var pattern = /^(0[1-9]|1[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/([0-9]{4})$/;    
+            if (!pattern.test(dob)) {    
+                formIsValid = false;    
+                formErrors["dobErr"] = "Invalid date of birth";    
+            }    
+        }    
+    
+        //Gender    
+        if (gender === '' || gender === "select") {    
+            formIsValid = false;    
+            formErrors["genderErr"] = "Select gender.";    
+        }    
+    
+        //Phone number    
+        if (!phone) {    
+            formIsValid = false;    
+            formErrors["phoneNumberErr"] = "Phone number is required.";    
+        }    
+        else {    
+            var mobPattern = /^(?:(?:\\+|0{0,2})91(\s*[\\-]\s*)?|[0]?)?[789]\d{9}$/;    
+            if (!mobPattern.test(phone)) {    
+                formIsValid = false;    
+                formErrors["phoneNumberErr"] = "Invalid phone number.";    
+            }    
+        }    
+    
+        //City    
+        if (city === '' || city === "select") {    
+            formIsValid = false;    
+            formErrors["cityErr"] = "Select city.";    
+        }    
+    
+        this.setState({ formErrors: formErrors });    
+        return formIsValid;    
+    }    
 
-   
+    const submitToConsole = () => {
+        console.log(userData.firstName,userData.lastName,userData.dept,userData.email,userData.phone,userData.position,userData.sex,userData.cv);
+    };
+
+    const submitData = async (event) => {
+        event.preventDefault();
+        const {firstName, lastName, dept, email, phone, position, sex, cv} = userData;
+        if(firstName && lastName && dept && email && phone && position && sex && cv){
+            const res = await fetch(
+                "https://pcu-application-portal-default-rtdb.firebaseio.com//userDataRecords.json",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body:JSON.stringify({
+                        firstName,
+                        lastName,
+                        dept,
+                        email,
+                        phone,
+                        position,
+                        sex,
+                        cv,
+                    }),
+                }
+            );
+            if(res){
+                alert("Application Submitted");
+            } else{
+                alert("Please fill the form correctly");
+            }
+        }
+    };
+    
     
     const scrollToTop = () => {
         window.scrollTo(0, 0)
@@ -99,16 +190,18 @@ const AcademicForm = () => {
 
         <div className="academicFormContainer">
             <div className="academicForm">
-                <form action="" method="POST">
+                <form method="POST">
                     <div className="flex">
                         <div className="form-group">
                             <label htmlFor="first-name" className='inputLabel'>First name *</label>
-                            <TextField id="firstName" placeholder="First name" name="first-name" variant='outlined' color='success' value={firstName} onChange={(e) => handleInputChange(e)} />
+                            <TextField id=""  placeholder='First Name' name='firstName' value={userData.firstName} onChange={postUserData} variant="outlined" color='success' type={'text'} required />
+                            <small className="text-danger">First name is required </small>
                         </div>
 
                         <div className="form-group">
                             <label htmlFor="last-name" className='inputLabel'>Last name *</label>
-                            <TextField id="lastName" placeholder="Last name" name="last-name" variant='outlined' color='success' value={lastName} onChange={(e) => handleInputChange(e)} />
+                            <TextField id=""  placeholder='Last Name' name='lastName' value={userData.lastName} onChange={postUserData} variant="outlined" color='success' type={'text'} required />
+                            <small className="text-danger">Last name is required </small>
                         </div>
                     </div>
                     
@@ -118,8 +211,8 @@ const AcademicForm = () => {
                         <label htmlFor="faculty" className='inputLabel'>Department *</label>
                         <Select
                             // labelId="demo-simple-select-label"
-                            id="deptName"
-                            name='Department' 
+                            
+                            name='dept' value={userData.dept} onChange={postUserData}
                             variant="outlined"
                             color='success'
                             defaultValue={'computer science'}
@@ -131,6 +224,7 @@ const AcademicForm = () => {
                             <MenuItem value='business administation'>Business Administation</MenuItem>
                             <MenuItem value='physics'>Physics</MenuItem>
                         </Select>
+                        <small className="text-danger">Department is required </small>
                     </div>
 
                     <div className="line"></div>
@@ -138,12 +232,14 @@ const AcademicForm = () => {
                     <div className="flex">
                         <div className="form-group">
                             <label htmlFor="email" className='inputLabel'>Email *</label>
-                            <TextField id="email" value={email} onChange={(e) => handleInputChange(e)} placeholder='Email' name='email' variant="outlined" color='success' type={'email'} />
+                            <TextField id="" name='email'  placeholder='Email' value={userData.email} onChange={postUserData} variant="outlined" color='success' type={'email'} />
+                            <small className="text-danger">Email is required </small>
                         </div>
 
                         <div className="form-group">
                             <label htmlFor="phone" className='inputLabel'>Phone number *</label>
-                            <TextField id="phoneNumber" value={phoneNumber} placeholder='Phone number' name='phone' variant="outlined" color='success' type={'number'} />
+                            <TextField placeholder='Phone number' name='phone' value={userData.phone} onChange={postUserData} variant="outlined" color='success' type={'number'} />
+                            <small className="text-danger">Phone Number is required </small>
                         </div>
                     </div>
 
@@ -152,8 +248,8 @@ const AcademicForm = () => {
                     <div className="form-group">
                         <label htmlFor="position" className='inputLabel'>Position applied for *</label>
                         <Select
-                            id="position"
-                            name='position'
+                            id=""
+                            name='position' value={userData.position} onChange={postUserData} 
                             variant="outlined"
                             color='success'
                             defaultValue={'professor'}
@@ -162,6 +258,7 @@ const AcademicForm = () => {
                             <MenuItem value='lecturer'>Lecturer</MenuItem>
                             <MenuItem value='associate professor'>Associate Professor</MenuItem>
                         </Select>
+                        <small className="text-danger">Position is required </small>
                     </div>
 
                     <div className="line"></div>
@@ -170,7 +267,7 @@ const AcademicForm = () => {
                         <div className="form-group">
                             <label htmlFor="sex" className='inputLabel'>Sex *</label>
                             <Select id='sex'
-                            name='sex'
+                            name='sex' value={userData.sex} onChange={postUserData} 
                             variant="outlined"
                             color='success'
                             defaultValue={'male'}
@@ -179,19 +276,21 @@ const AcademicForm = () => {
                             <MenuItem value='female'>Female</MenuItem>
                             <MenuItem value='rather not say'>Rather not say</MenuItem>
                         </Select>
+                        <small className="text-danger">Gender is required </small>
 
                         </div>
 
                         <div className="form-group">
                             <label htmlFor="cv" className='inputLabel'>Upload cv *</label>
-                            <TextField id="cv" name='cv' variant="outlined" color='success' type='file'/>
+                            <TextField id="" name='cv' value={userData.cv} onChange={postUserData} variant="outlined" color='success' type='file'/>
                         </div>
+                        <small className="text-danger">CV is required </small>
                     </div>
 
                     <div className="form-group" style={{
                         marginBottom: '0px'
                     }}>
-                        <Button onClick={()=>handleSubmission()} variant="contained" color='success' className='formButton'> Submit </Button>
+                        <Button onClick={submitData} variant="contained" color='success' className='formButton'> Submit </Button>
                     </div>
 
                 </form>
