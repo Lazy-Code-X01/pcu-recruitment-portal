@@ -67,7 +67,7 @@ const AcademicForm = () => {
     };
 
 
-    handleFormValidation() {    
+    const handleFormValidation = () => {    
         const { firstName, lastName, dept, email, phone, position, sex, cv } = this.state;    
         let formErrors = {};    
         let formIsValid = true;    
@@ -83,59 +83,59 @@ const AcademicForm = () => {
             formIsValid = false;    
             formErrors["lastNameErr"] = "Last name is required.";    
         }
+
+        //Last name
+        if (!dept) {    
+            formIsValid = false;    
+            formErrors["deptErr"] = "Dept is required.";    
+        }
     
         //Email    
-        if (!emailId) {    
+        if (!email) {    
             formIsValid = false;    
             formErrors["emailIdErr"] = "Email id is required.";    
         }    
-        else if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(emailId))) {    
+        else if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {    
     
             formIsValid = false;    
-            formErrors["emailIdErr"] = "Invalid email id.";    
-        }    
-    
-        //DOB    
-        if (!dob) {    
-            formIsValid = false;    
-            formErrors["dobErr"] = "Date of birth is required.";    
-        }    
-        else {    
-            var pattern = /^(0[1-9]|1[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/([0-9]{4})$/;    
-            if (!pattern.test(dob)) {    
-                formIsValid = false;    
-                formErrors["dobErr"] = "Invalid date of birth";    
-            }    
-        }    
-    
-        //Gender    
-        if (gender === '' || gender === "select") {    
-            formIsValid = false;    
-            formErrors["genderErr"] = "Select gender.";    
-        }    
-    
+            formErrors["emailErr"] = "Invalid email address.";    
+        } 
+        
         //Phone number    
         if (!phone) {    
             formIsValid = false;    
-            formErrors["phoneNumberErr"] = "Phone number is required.";    
+            formErrors["phoneErr"] = "Phone number is required.";    
         }    
         else {    
             var mobPattern = /^(?:(?:\\+|0{0,2})91(\s*[\\-]\s*)?|[0]?)?[789]\d{9}$/;    
             if (!mobPattern.test(phone)) {    
                 formIsValid = false;    
-                formErrors["phoneNumberErr"] = "Invalid phone number.";    
+                formErrors["phoneErr"] = "Invalid phone number.";    
             }    
-        }    
-    
-        //City    
-        if (city === '' || city === "select") {    
+        }
+        
+        //Position    
+        if (position === '') {    
             formIsValid = false;    
-            formErrors["cityErr"] = "Select city.";    
+            formErrors["positionErr"] = "Select position.";    
+        }  
+    
+        //sex    
+        if (sex === '' || sex === "rather not say") {    
+            formIsValid = false;    
+            formErrors["sexErr"] = "Select gender.";    
         }    
+        
+        //cv    
+        if (!cv === '' || cv === "") {    
+            formIsValid = true;    
+                
+        }  
+          
     
         this.setState({ formErrors: formErrors });    
         return formIsValid;    
-    }    
+    };    
 
     const submitToConsole = () => {
         console.log(userData.firstName,userData.lastName,userData.dept,userData.email,userData.phone,userData.position,userData.sex,userData.cv);
@@ -284,7 +284,7 @@ const AcademicForm = () => {
                             <label htmlFor="cv" className='inputLabel'>Upload cv *</label>
                             <TextField id="" name='cv' value={userData.cv} onChange={postUserData} variant="outlined" color='success' type='file'/>
                         </div>
-                        <small className="text-danger">CV is required </small>
+                        
                     </div>
 
                     <div className="form-group" style={{
